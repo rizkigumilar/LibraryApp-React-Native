@@ -109,8 +109,8 @@ const book = (state = initialState, action) => {
             };
         case 'PAGE_LIST':
             return {
-              ...state,
-              books: action.dataPage.result
+                ...state,
+                books: action.dataPage.result
             }
         default:
             return state;

@@ -1,4 +1,6 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
+import { register } from '../publics/redux/actions/user';
 import {
     StyleSheet,
     Text,
@@ -11,13 +13,12 @@ import {
 } from 'react-native';
 import profile from '../assets/profile.png'
 
-export default class Register extends Component {
+class Register extends Component {
 
     constructor(props) {
         super(props);
         state = {
-            email: '',
-            password: '',
+            user: [],
         }
     }
 
@@ -26,6 +27,23 @@ export default class Register extends Component {
     }
 
     render() {
+        const userAdd = () => {
+            this.state.user.push({
+                email: this.state.email,
+                fullname: this.state.fullname,
+                idNum: this.state.idNum,
+                password: this.state.password
+            });
+            add()
+        }
+        let add = async () => {
+            await this.props.dispatch(register(this.state.user[0]))
+                .then(() => {
+                    this.props.navigation.navigate('Login');
+                })
+        }
+
+        console.log(this.state)
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>Register</Text>
@@ -42,9 +60,18 @@ export default class Register extends Component {
                     <Image style={styles.inputIcon} source={profile} />
                     <TextInput style={styles.inputs}
                         placeholder="Fullname"
-                        keyboardType="text"
+                        keyboardType="default"
                         underlineColorAndroid='transparent'
                         onChangeText={(fullname) => this.setState({ fullname })} />
+                </View>
+
+                <View style={styles.inputContainer}>
+                    <Image style={styles.inputIcon} source={profile} />
+                    <TextInput style={styles.inputs}
+                        placeholder="Id Number"
+                        keyboardType="numeric"
+                        underlineColorAndroid='transparent'
+                        onChangeText={(idNum) => this.setState({ idNum })} />
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -56,7 +83,7 @@ export default class Register extends Component {
                         onChangeText={(password) => this.setState({ password })} />
                 </View>
 
-                <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => this.onClickListener('login')}>
+                <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={userAdd}>
                     <Text style={styles.loginText}>Register</Text>
                 </TouchableHighlight>
 
@@ -67,7 +94,12 @@ export default class Register extends Component {
         );
     }
 }
-
+const mapStateToProps = state => {
+    return {
+        user: state.user
+    };
+};
+export default connect(mapStateToProps)(Register);
 const styles = StyleSheet.create({
     container: {
         flex: 1,

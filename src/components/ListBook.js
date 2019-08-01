@@ -9,7 +9,6 @@ import {
     TouchableOpacity,
     Text
 } from 'react-native';
-import Data from '../data/dataDummy'
 import { withNavigation } from 'react-navigation';
 import { getBook } from '../publics/redux/actions/book';
 
@@ -26,7 +25,20 @@ class List extends Component {
         this.setState({
             books: this.props.books,
         });
+        this.subs = [
+            this.props.navigation.addListener('willFocus', async () => {
+                await this.props.dispatch(getBook());
+                this.setState({
+                    books: this.props.books,
+                })
+            }
+            )]
 
+    };
+    componentWillUnmount = () => {
+        this.subs.forEach(sub => {
+            sub.remove();
+        });
     };
 
     _renderItem = ({ item }) => (
@@ -34,7 +46,6 @@ class List extends Component {
             <TouchableOpacity activeOpacity={1} onPress={() => { this.props.navigation.navigate('BookDetail', item) }}>
                 <Image style={styles.imageThumbnail} source={{ uri: item.image }} />
             </TouchableOpacity>
-            <Text style={styles.title}>{item.name}</Text>
 
         </View>
     )
@@ -70,18 +81,11 @@ const styles = StyleSheet.create({
     imageThumbnail: {
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: 'grey',
         height: 250,
-        marginLeft: 10,
-        marginRight: 10,
-        marginBottom: 30,
+        marginLeft: 20,
+        marginRight: 20,
+        marginBottom: 5,
         borderRadius: 10
     },
-
-    title: {
-        fontSize: 18,
-        marginBottom: 20,
-        marginTop: -30,
-        marginLeft: 20,
-        fontWeight: 'bold'
-    }
 });

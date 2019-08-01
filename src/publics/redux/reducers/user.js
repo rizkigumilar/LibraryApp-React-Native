@@ -25,7 +25,7 @@ const user = (state = initialState, action) => {
                 ...state,
                 isLoading: false,
                 isFulfilled: true,
-                userList: [state.userList, action.payload.data[0]]
+                userList: [state.userList, action.payload[0]]
             };
         case 'LOGIN_LOADING':
             return {
