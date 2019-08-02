@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { withNavigation } from 'react-navigation';
-import { login } from '../publics/redux/actions/user';
+import { login, getUserId } from '../publics/redux/actions/user';
 import {
+    AsyncStorage,
     StyleSheet,
     Text,
     View,
@@ -13,6 +14,7 @@ import {
     Alert
 } from 'react-native';
 import Logo from '../assets/librarysymbol.jpg'
+import { NavigationEvents } from 'react-navigation';
 import { ScrollView } from 'react-native-gesture-handler';
 
 class Login extends Component {
@@ -20,70 +22,100 @@ class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            isLogin: false,
             user: [],
             email: '',
+            name: '',
             password: ''
-        };
+
+        }
+        AsyncStorage.getItem('name', (error, result) => {
+            if (result) {
+                this.setState({
+                    name: result,
+                });
+            }
+        });
+
     }
     onClickListener = (viewId) => {
         Alert.alert("Alert", "Button pressed " + viewId);
     }
-
     render() {
+        console.log('ini nama', this.state.name)
         const log = () => {
             this.state.user.push({
                 email: this.state.email.toLocaleLowerCase(),
                 password: this.state.password.toLocaleLowerCase(),
             });
             loginuser()
-
-            console.log(this.state.user);
+            this.setState({ isLogin: true });
         };
         let loginuser = async () => {
-            await this.props.dispatch(login(this.state.user[1]))
+            await this.props.dispatch(login(this.state.user[0]))
                 .then(() => {
                     this.props.navigation.navigate('Home');
-                    console.log('berhasil')
-                    console.log(AsyncStorage.getItem('jwtToken'))
-                    console.log(AsyncStorage.getItem('idUser'))
                 })
 
         };
-
+        const del = () => {
+            AsyncStorage.removeItem('userid')
+            AsyncStorage.removeItem('jwtToken')
+                .then(() => {
+                    this.setState({ isLogin: false })
+                    this.props.navigation.navigate("Home");
+                })
+        };
+        console.log("userid", this.state.isLogin)
         return (
             <ScrollView>
-                <View style={styles.container}>
-                    <Image style={styles.logo} source={Logo} />
-                    <Text style={styles.title}>Login</Text>
-                    <View style={styles.inputContainer}>
-                        <Image style={styles.inputIcon} source={{ uri: 'http://icons.iconarchive.com/icons/mysitemyway/blue-jeans-social-media/256/mail-icon.png' }} />
-                        <TextInput style={styles.inputs}
-                            placeholder="Email"
-                            keyboardType="email-address"
-                            underlineColorAndroid='transparent'
-                            onChangeText={(email) => this.setState({ email })} />
+                <View behavior="padding"
+                    style={styles.Wrapper}>
+                    <NavigationEvents
+                        onWillFocus={payload => this.props.dispatch(getUserId(this.state.userid))}
+                    />
+
+                    <View style={styles.container}>
+                        <Image style={styles.logo} source={Logo} />
+                        {this.state.isLogin == false ? (
+                            <View>
+                                <Text style={styles.title}>Login</Text>
+                                <View style={styles.inputContainer}>
+                                    <Image style={styles.inputIcon} source={{ uri: 'http://icons.iconarchive.com/icons/mysitemyway/blue-jeans-social-media/256/mail-icon.png' }} />
+                                    <TextInput style={styles.inputs}
+                                        placeholder="Email"
+                                        keyboardType="email-address"
+                                        underlineColorAndroid='transparent'
+                                        onChangeText={(email) => this.setState({ email })} />
+                                </View>
+
+                                <View style={styles.inputContainer}>
+                                    <Image style={styles.inputIcon} source={{ uri: 'https://image.flaticon.com/icons/png/512/69/69891.png' }} />
+                                    <TextInput style={styles.inputs}
+                                        placeholder="Password"
+                                        secureTextEntry={true}
+                                        underlineColorAndroid='transparent'
+                                        onChangeText={(password) => this.setState({ password })} />
+                                </View>
+
+                                <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={log}>
+                                    <Text style={styles.loginText}>Login</Text>
+                                </TouchableHighlight>
+
+                                <TouchableHighlight style={styles.buttonContainer} onPress={() => this.onClickListener('restore_password')}>
+                                    <Text>Forgot your password?</Text>
+                                </TouchableHighlight>
+
+                                <TouchableHighlight style={styles.buttonContainer} onPress={() => this.props.navigation.navigate('Register')}>
+                                    <Text>Register</Text>
+                                </TouchableHighlight>
+                            </View>) : (<View>
+                                <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Hello, {this.state.name}</Text>
+                                <TouchableHighlight onPress={del.bind(this)} style={[styles.buttonContainer, styles.loginButton]}>
+                                    <Text style={styles.loginText}>Logout</Text>
+                                </TouchableHighlight>
+                            </View>)}
                     </View>
-
-                    <View style={styles.inputContainer}>
-                        <Image style={styles.inputIcon} source={{ uri: 'https://image.flaticon.com/icons/png/512/69/69891.png' }} />
-                        <TextInput style={styles.inputs}
-                            placeholder="Password"
-                            secureTextEntry={true}
-                            underlineColorAndroid='transparent'
-                            onChangeText={(password) => this.setState({ password })} />
-                    </View>
-
-                    <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={log}>
-                        <Text style={styles.loginText}>Login</Text>
-                    </TouchableHighlight>
-
-                    <TouchableHighlight style={styles.buttonContainer} onPress={() => this.onClickListener('restore_password')}>
-                        <Text>Forgot your password?</Text>
-                    </TouchableHighlight>
-
-                    <TouchableHighlight style={styles.buttonContainer} onPress={() => this.props.navigation.navigate('Register')}>
-                        <Text>Register</Text>
-                    </TouchableHighlight>
                 </View>
             </ScrollView>
         );

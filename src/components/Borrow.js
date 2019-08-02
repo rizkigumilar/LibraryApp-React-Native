@@ -1,28 +1,45 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Modal, Text, ScrollView, View, Image, TouchableOpacity, TouchableHighlight, StyleSheet, Alert } from 'react-native';
-import { Button } from 'native-base';
+import { AsyncStorage, Modal, Text, ScrollView, View, Image, TouchableOpacity, TouchableHighlight, StyleSheet, Alert } from 'react-native';
 import { postBorrow } from '../publics/redux/actions/borrow';
 
 class Borrow extends Component {
+    state = {
+        name: '',
+        user_id: '',
+        idNum: '',
+        id: this.props.id,
+        modalVisible: false,
+        borrow: [],
+    };
     constructor(props) {
         super(props);
-        this.state = {
-            user_id: 6666,
-            id: this.props.id,
-            modalVisible: false,
-            borrow: [],
-        };
-    };
 
+    }
+    componentDidMount = async () => {
+        await AsyncStorage.getItem('userid').then((value) => {
+            this.setState({ userid: value })
+        })
+        await AsyncStorage.getItem('name').then((value) => {
+            this.setState({ name: value })
+        })
+        await AsyncStorage.getItem('idNum', (err, result) => {
+            console.log("idNum", err + result)
+            if (result) {
+                this.setState({ idNum: result })
+            }
+        })
+
+    }
     setModalVisible(visible) {
         this.setState({ modalVisible: visible });
     }
     render() {
+        console.log("ini id nyaaa", this.state.idNum)
         const borrow = () => {
             this.state.borrow.push({
-                bookid: this.state.id,
-                user_id: this.state.user_id,
+                idNum: this.state.idNum,
+                idBook: this.state.id
             });
             add()
             this.setState((visible) => ({
@@ -32,7 +49,7 @@ class Borrow extends Component {
         let add = async () => {
             await this.props.dispatch(postBorrow(this.state.borrow[0]));
         };
-
+        console.log(this.state.idBook)
         var today = new Date();
         var dd = String(today.getDate() + 3).padStart(2, '0');
         var mm = String(today.getMonth() + 1).padStart(2, '0');
@@ -51,20 +68,20 @@ class Borrow extends Component {
                     transparent={false}
                     visible={this.state.modalVisible}
                 >
-                    <View style={{ margin: 22 }}>
-                        <Text>Name : Samsul</Text>
-                        <Text>{this.state.user_id}</Text>
+                    <View style={styles.container}>
+                        <Text>Name : {this.state.name}</Text>
+                        <Text>{this.state.idNum}</Text>
                         <Text>Title : {this.props.name}</Text>
                         <Text>{date}</Text>
+                        <TouchableOpacity onPress={borrow.bind(this)} style={styles.addButton}>
+                            <Text style={{ color: 'white', fontSize: 18 }}>Borrow</Text>
+                        </TouchableOpacity>
                         <TouchableHighlight
                             onPress={() => {
                                 this.setModalVisible(!this.state.modalVisible);
-                            }}>
-                            <Text style={{ color: 'black', fontSize: 18 }}>Hide Modal</Text>
+                            }} style={styles.addButton}>
+                            <Text style={{ color: 'white', fontSize: 18 }}>Cancel</Text>
                         </TouchableHighlight>
-                        <TouchableOpacity onPress={borrow.bind(this)} style={styles.addButton}>
-                            <Text style={{ color: 'white', fontSize: 18 }}>Donate</Text>
-                        </TouchableOpacity>
                     </View>
                 </Modal>
             </View>
@@ -79,28 +96,8 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps)(Borrow);
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        flexDirection: 'row',
-        position: 'relative',
-        padding: 20
-    },
-    textLeft: {
-        flexDirection: 'column',
-        flex: 1,
-        paddingLeft: 10
-    },
-    image: {
-        width: 90,
-        height: 140,
-        borderRadius: 10,
-    },
-    name: {
-        fontSize: 22,
-        fontWeight: 'bold'
-    },
-    writer: {
-        fontSize: 18,
-        paddingBottom: 10
+        paddingTop: 200,
+        marginLeft: 100
     },
     status: {
         backgroundColor: '#428bff',
@@ -117,14 +114,10 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         right: 275,
-        bottom: 50,
+        top: -90,
         backgroundColor: '#05A0E4',
         borderRadius: 10,
         elevation: 3
-    },
-    des: {
-        marginTop: 0,
-        padding: 20,
     },
     addButton: {
         backgroundColor: 'black',

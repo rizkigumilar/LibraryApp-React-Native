@@ -85,7 +85,7 @@ const switchNavigator = createBottomTabNavigator(
     {
         Home: { screen: HomeStack },
         Donation: { screen: DonationStack },
-        History: { screen: HistoryStack },
+        // History: { screen: HistoryStack },
         Profile: { screen: ProfileStack },
     },
     {
@@ -112,7 +112,5 @@ const switchNavigator = createBottomTabNavigator(
         },
     }
 );
-//For React Navigation 2.+ need to export App only
-//export default App;
-//For React Navigation 3.+
+
 export default createAppContainer(switchNavigator);

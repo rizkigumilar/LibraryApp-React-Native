@@ -5,11 +5,12 @@ import {
     View,
     Image,
     Text,
-    Button
+    TouchableHighlight
 } from 'react-native';
 import { connect } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
 import Borrow from '../components/Borrow';
+import Return from '../components/Return';
 
 
 
@@ -39,7 +40,14 @@ class BookDetail extends Component {
                     <Image style={styles.imageThumbnail} source={{ uri: this.state.image }} />
                     <Text style={styles.title}>{this.state.name}</Text>
                     <Text style={styles.writer}>by : {this.state.writer}</Text>
-                    <Borrow />
+                    {this.state.status == 1 ?
+                        (<TouchableHighlight style={styles.status}><Text>Not Available</Text></TouchableHighlight>) :
+                        (<TouchableHighlight style={styles.status}>
+                            <Text >Available</Text>
+                        </TouchableHighlight>)}
+                    {this.state.status == 1 ?
+                        (<Return id={this.state.id} name={this.state.name} />) :
+                        (<Borrow id={this.state.id} name={this.state.name} />)}
                     <Text>{this.state.description}</Text>
                 </View>
             </ScrollView>
@@ -94,7 +102,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#428bff',
         width: 140,
         height: 30,
-        marginTop: 100,
+        marginLeft: 18,
+        borderRadius: 8,
+        marginTop: 50,
         justifyContent: "center",
         alignItems: "center"
     },

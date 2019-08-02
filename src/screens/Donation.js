@@ -57,6 +57,7 @@ class Donation extends Component {
                     <View style={styles.inputContainer}>
                         <TextInput style={styles.inputs}
                             placeholder="Image"
+                            onlo={true}
                             onChangeText={val => this.setState({ 'image': val })} />
                     </View>
                     <View style={styles.inputContainer}>

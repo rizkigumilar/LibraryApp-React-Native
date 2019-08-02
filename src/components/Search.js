@@ -8,9 +8,8 @@ class SearchBar extends Component {
             <Container style={{ height: 70 }}>
                 <Header searchBar rounded style={{ backgroundColor: 'white', borderRadius: 8, width: '95%', marginTop: 10, marginLeft: 10, height: 50 }}>
                     <Item>
-                        <Icon name="ios-search" />
                         <Input placeholder="Search" />
-                        <Icon name="ios-book" />
+                        <Icon name="ios-search" />
                     </Item>
                 </Header>
             </Container>

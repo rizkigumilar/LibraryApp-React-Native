@@ -46,6 +46,8 @@ class List extends Component {
             <TouchableOpacity activeOpacity={1} onPress={() => { this.props.navigation.navigate('BookDetail', item) }}>
                 <Image style={styles.imageThumbnail} source={{ uri: item.image }} />
             </TouchableOpacity>
+            {item.StatusBorrow == 0 ? (<Text numberOfLines={1} style={styles.textBorrow}>Available</Text>)
+                : (<Text numberOfLines={1} style={styles.textBorrowed}>Not Available</Text>)}
 
         </View>
     )
@@ -87,5 +89,30 @@ const styles = StyleSheet.create({
         marginRight: 20,
         marginBottom: 5,
         borderRadius: 10
+    },
+    textBorrow: {
+        fontSize: 10,
+        color: 'white',
+        textAlign: 'center',
+        paddingBottom: 2,
+        backgroundColor: '#00FF00',
+        position: 'absolute',
+        zIndex: 1,
+        width: 155,
+        height: 15,
+        marginTop: 220,
+        marginLeft: 20
+    },
+    textBorrowed: {
+        fontSize: 10,
+        color: 'white',
+        textAlign: 'center',
+        backgroundColor: 'grey',
+        position: 'absolute',
+        zIndex: 1,
+        width: 155,
+        height: 15,
+        marginTop: 220,
+        marginLeft: 20
     },
 });

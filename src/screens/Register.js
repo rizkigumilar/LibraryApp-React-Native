@@ -27,23 +27,24 @@ class Register extends Component {
     }
 
     render() {
-        const userAdd = () => {
+        const userRegister = () => {
             this.state.user.push({
                 email: this.state.email,
                 fullname: this.state.fullname,
+                password: this.state.password,
                 idNum: this.state.idNum,
-                password: this.state.password
             });
+
             add()
-        }
+            this.setState((prevState) => ({
+                modal: !prevState.modal
+            }));
+            console.log(this.state.user);
+        };
         let add = async () => {
             await this.props.dispatch(register(this.state.user[0]))
-                .then(() => {
-                    this.props.navigation.navigate('Login');
-                })
-        }
+        };
 
-        console.log(this.state)
         return (
             <View style={styles.container}>
                 <Text style={styles.title}>Register</Text>
@@ -83,7 +84,7 @@ class Register extends Component {
                         onChangeText={(password) => this.setState({ password })} />
                 </View>
 
-                <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={userAdd}>
+                <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={userRegister.bind(this)}>
                     <Text style={styles.loginText}>Register</Text>
                 </TouchableHighlight>
 

@@ -8,10 +8,18 @@ export const getUsers = () => {
             {
                 headers: {
                     "authorization": "x-control-app",
-                    "x-access-token": `token: ${localStorage.jwToken}`,
-                    "x-control-user": localStorage.userid
+                    "x-access-token": `token: ${AsyncStorage.jwToken}`,
+                    "x-control-user": AsyncStorage.userid
                 }
             })
+    }
+}
+
+export const getUserId = (userid) => {
+    return {
+        type: 'GET_USERID',
+        payload: axios.get(`http://192.168.6.191:3001/user/${userid}`),
+
     }
 }
 
@@ -43,7 +51,7 @@ export const login = (data) => {
             const userid = res.data.result.userid
             const name = res.data.result.fullname
             const status = res.data.result.status
-            const idNum = res.data.result.idNum
+            const idNum = res.data.result.idNum.toString()
             AsyncStorage.setItem('idNum', idNum)
             AsyncStorage.setItem('status', status)
             AsyncStorage.setItem('userid', userid)
@@ -51,5 +59,13 @@ export const login = (data) => {
             AsyncStorage.setItem('name', name)
 
         })
+    }
+}
+
+export const logout = (userid) => {
+    return {
+        type: 'LOGOUT', userid,
+        payload: axios.patch(`http://192.168.6.191:3001/token/${userid}`)
+
     }
 }
