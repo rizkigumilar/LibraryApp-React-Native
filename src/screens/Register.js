@@ -12,37 +12,69 @@ import {
     Alert
 } from 'react-native';
 import profile from '../assets/profile.png'
+import axios from 'axios'
 
 class Register extends Component {
 
     constructor(props) {
         super(props);
         state = {
-            user: [],
+            user: {},
+            data: []
         }
+        this.toggle = this.toggle.bind(this);
     }
 
-    onClickListener = (viewId) => {
-        Alert.alert("Alert", "Button pressed " + viewId);
+    toggle() {
+        this.setState({
+            modal: !this.state.modal
+        });
+    }
+    toggleDrop() {
+        this.setState((prevState) => ({
+            dropdownOpen: !prevState.dropdownOpen
+        }));
     }
 
     render() {
         const userRegister = () => {
-            this.state.user.push({
+            const Data = {
                 email: this.state.email,
                 fullname: this.state.fullname,
                 password: this.state.password,
                 idNum: this.state.idNum,
-            });
+            }
+            this.setState({
+                user: Data
+            })
 
             add()
             this.setState((prevState) => ({
                 modal: !prevState.modal
             }));
-            console.log(this.state.user);
+            // console.log(this.state.user);
         };
         let add = async () => {
-            await this.props.dispatch(register(this.state.user[0]))
+            console.log(this.state.user)
+            await this.props.dispatch(register(this.state.user))
+                .then(() => {
+                    Alert.alert(
+                        'Register',
+                        'Register Success',
+                        [
+                            { text: 'OK', onPress: () => this.props.navigation.navigate('Login') },
+                        ],
+                    );
+                })
+                .catch(() => {
+                    Alert.alert(
+                        'Register',
+                        'Register Failed',
+                        [
+                            { text: 'Try Again' },
+                        ],
+                    );
+                })
         };
 
         return (
@@ -54,7 +86,7 @@ class Register extends Component {
                         placeholder="Email"
                         keyboardType="email-address"
                         underlineColorAndroid='transparent'
-                        onChangeText={(email) => this.setState({ email })} />
+                        onChangeText={val => this.setState({ 'email': val })} />
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -63,7 +95,7 @@ class Register extends Component {
                         placeholder="Fullname"
                         keyboardType="default"
                         underlineColorAndroid='transparent'
-                        onChangeText={(fullname) => this.setState({ fullname })} />
+                        onChangeText={val => this.setState({ 'fullname': val })} />
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -72,7 +104,7 @@ class Register extends Component {
                         placeholder="Id Number"
                         keyboardType="numeric"
                         underlineColorAndroid='transparent'
-                        onChangeText={(idNum) => this.setState({ idNum })} />
+                        onChangeText={val => this.setState({ 'idNum': val })} />
                 </View>
 
                 <View style={styles.inputContainer}>
@@ -81,7 +113,7 @@ class Register extends Component {
                         placeholder="Password"
                         secureTextEntry={true}
                         underlineColorAndroid='transparent'
-                        onChangeText={(password) => this.setState({ password })} />
+                        onChangeText={val => this.setState({ 'password': val })} />
                 </View>
 
                 <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={userRegister.bind(this)}>

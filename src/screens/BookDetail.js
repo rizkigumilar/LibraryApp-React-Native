@@ -5,7 +5,9 @@ import {
     View,
     Image,
     Text,
-    TouchableHighlight
+    TouchableHighlight,
+    AsyncStorage,
+    TouchableOpacity
 } from 'react-native';
 import { connect } from 'react-redux';
 import { ScrollView } from 'react-native-gesture-handler';
@@ -26,12 +28,18 @@ class BookDetail extends Component {
             description: this.props.navigation.state.params.description,
             status: this.props.navigation.state.params.StatusBorrow,
             modalVisible: false,
-            user: null,
+        }
+        {
+            AsyncStorage.getItem('userid').then((value) => {
+                this.setState({ userid: value })
+            })
         }
     }
+
     setModalVisible(visible) {
         this.setState({ modalVisible: visible });
     }
+
     render() {
         return (
             <ScrollView>
@@ -45,15 +53,20 @@ class BookDetail extends Component {
                         (<TouchableHighlight style={styles.status}>
                             <Text >Available</Text>
                         </TouchableHighlight>)}
-                    {this.state.status == 1 ?
-                        (<Return id={this.state.id} name={this.state.name} />) :
-                        (<Borrow id={this.state.id} name={this.state.name} />)}
+                    {this.state.userid == null ?
+                        (<TouchableOpacity onPress={() => { this.props.navigation.navigate('Login') }} style={styles.login}><Text style={{ color: 'black' }}>Login!</Text></TouchableOpacity>)
+                        : (<View>
+                            {this.state.status == 1 ?
+                                (<Return id={this.state.id} name={this.state.name} />) :
+                                (<Borrow id={this.state.id} name={this.state.name} />)}
+                        </View>)}
                     <Text>{this.state.description}</Text>
                 </View>
             </ScrollView>
-        );
-    }
+        )
+    };
 }
+
 const mapStateToProps = state => {
     return {
         user: state.user,
@@ -96,6 +109,17 @@ const styles = StyleSheet.create({
         marginTop: -70,
         marginLeft: 20,
         fontWeight: 'bold'
+    },
+    login: {
+        backgroundColor: 'white',
+        color: 'black',
+        width: 140,
+        height: 30,
+        justifyContent: "center",
+        alignItems: "center",
+        marginTop: 5,
+        marginLeft: 18,
+        borderWidth: 2
     },
 
     status: {

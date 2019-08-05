@@ -15,6 +15,7 @@ import HistoryScreen from '../../screens/History';
 import ProfileScreen from '../../screens/Profile';
 import Login from '../../screens/LoginForm'
 import Register from '../../screens/Register'
+import BorrowList from '../../screens/UserBorrowList';
 
 
 const HomeStack = createStackNavigator(
@@ -68,6 +69,7 @@ const ProfileStack = createStackNavigator(
         Profile: { screen: ProfileScreen },
         Login: { screen: Login },
         Register: { screen: Register },
+        BorrowList: { screen: BorrowList }
     },
     {
         defaultNavigationOptions: {
@@ -85,7 +87,7 @@ const switchNavigator = createBottomTabNavigator(
     {
         Home: { screen: HomeStack },
         Donation: { screen: DonationStack },
-        // History: { screen: HistoryStack },
+        History: { screen: HistoryStack },
         Profile: { screen: ProfileStack },
     },
     {

@@ -36,13 +36,49 @@ class Donation extends Component {
         };
         let add = async () => {
             await this.props.dispatch(postBook(this.state.book[0]))
+                .then(() => {
+                    Alert.alert(
+                        'Success',
+                        'Donation Success, Thank you',
+                        [
+                            { text: 'OK', onPress: () => this.props.navigation.navigate('Home') },
+                        ],
+                    )
+                    this.setState({
+
+                        name: '',
+                        writer: '',
+                        image: '',
+                        description: '',
+                        idCat: '',
+                        location: '',
+                    })
+                })
+                .catch(() => {
+                    Alert.alert(
+                        'Failed',
+                        'Donation Failed',
+                        [
+                            { text: 'Try Again' },
+                        ],
+                    )
+                    this.setState({
+
+                        name: '',
+                        writer: '',
+                        image: '',
+                        description: '',
+                        idCat: '',
+                        location: '',
+                    })
+                })
 
         };
 
         return (
             <ScrollView>
                 <View>
-                    <Text style={{ fontSize: 40, fontWeight: 'bold', alignItems: 'center', marginLeft: 60 }}>Donation Book</Text>
+                    <Text style={{ fontSize: 40, fontWeight: 'bold', alignItems: 'center', marginLeft: 20 }}>Welcome Generous People</Text>
                     <View style={styles.inputContainer}>
                         <TextInput style={styles.inputs}
                             placeholder="Book Name"
@@ -57,7 +93,6 @@ class Donation extends Component {
                     <View style={styles.inputContainer}>
                         <TextInput style={styles.inputs}
                             placeholder="Image"
-                            onlo={true}
                             onChangeText={val => this.setState({ 'image': val })} />
                     </View>
                     <View style={styles.inputContainer}>

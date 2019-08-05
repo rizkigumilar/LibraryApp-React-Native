@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { Modal, Text, ScrollView, View, Image, TouchableOpacity, TouchableHighlight, StyleSheet, Alert } from 'react-native';
-import { Button } from 'native-base';
 import { connect } from 'react-redux';
 import { getBorrow, updateBorrow } from '../publics/redux/actions/borrow';
 import Penalty from './Penalty';
@@ -68,18 +67,18 @@ class Restore extends Component {
                     transparent={false}
                     visible={this.state.modalVisible}
                 >
-                    <View style={{ margin: 22 }}>
+                    <View style={styles.container}>
                         <Text>Title : {this.props.name}</Text>
                         <Text>{date}</Text>
-                        <TouchableHighlight
-                            onPress={() => {
-                                this.setModalVisible(!this.state.modalVisible);
-                            }}>
-                            <Text style={{ color: 'black', fontSize: 18 }}>Cancel</Text>
-                        </TouchableHighlight>
                         <TouchableOpacity onPress={editBorrow.bind(this)} style={styles.addButton}>
                             <Penalty id={this.props.id} />
                         </TouchableOpacity>
+                        <TouchableHighlight
+                            onPress={() => {
+                                this.setModalVisible(!this.state.modalVisible);
+                            }} style={styles.addButton}>
+                            <Text style={{ color: 'white', fontSize: 18 }}>Cancel</Text>
+                        </TouchableHighlight>
                     </View>
                 </Modal>
             </View>
@@ -94,10 +93,8 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps)(Restore);
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        flexDirection: 'row',
-        position: 'relative',
-        padding: 20
+        paddingTop: 200,
+        marginLeft: 100
     },
     textLeft: {
         flexDirection: 'column',
@@ -143,7 +140,7 @@ const styles = StyleSheet.create({
     },
     addButton: {
         backgroundColor: 'black',
-        marginTop: 40,
+        marginTop: 20,
         width: 160,
         height: 40,
         borderRadius: 8,

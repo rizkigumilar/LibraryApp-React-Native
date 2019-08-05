@@ -6,7 +6,7 @@ import { postBorrow } from '../publics/redux/actions/borrow';
 class Borrow extends Component {
     state = {
         name: '',
-        user_id: '',
+        userid: '',
         idNum: '',
         id: this.props.id,
         modalVisible: false,
@@ -24,7 +24,6 @@ class Borrow extends Component {
             this.setState({ name: value })
         })
         await AsyncStorage.getItem('idNum', (err, result) => {
-            console.log("idNum", err + result)
             if (result) {
                 this.setState({ idNum: result })
             }
@@ -36,6 +35,7 @@ class Borrow extends Component {
     }
     render() {
         console.log("ini id nyaaa", this.state.idNum)
+        console.log("ini id book", this.props.id)
         const borrow = () => {
             this.state.borrow.push({
                 idNum: this.state.idNum,
@@ -47,9 +47,18 @@ class Borrow extends Component {
             }));
         };
         let add = async () => {
-            await this.props.dispatch(postBorrow(this.state.borrow[0]));
+            await this.props.dispatch(postBorrow(this.state.borrow[0]))
+                .then(() => {
+                    Alert.alert(
+                        'Success',
+                        'Borrow Success, Hope you enjoy the book',
+                        [
+                            { text: 'OK', onPress: () => this.props.navigation.navigate('Home') },
+                        ],
+                    );
+                })
         };
-        console.log(this.state.idBook)
+
         var today = new Date();
         var dd = String(today.getDate() + 3).padStart(2, '0');
         var mm = String(today.getMonth() + 1).padStart(2, '0');

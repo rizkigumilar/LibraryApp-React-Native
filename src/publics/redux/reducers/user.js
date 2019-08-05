@@ -1,3 +1,5 @@
+
+
 const initialState = {
     userList: [],
     isLoading: false,
@@ -21,11 +23,12 @@ const user = (state = initialState, action) => {
                 isRejected: true
             };
         case 'REGISTER_FULFILLED':
+            console.log(action.payload)
             return {
                 ...state,
                 isLoading: false,
                 isFulfilled: true,
-                userList: [state.userList, action.payload[0]]
+                userList: [state.userList, action.payload.data[0]]
             };
         case 'LOGIN_LOADING':
             return {

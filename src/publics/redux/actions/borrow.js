@@ -21,10 +21,10 @@ export const userBorrow = (idNum) => {
     }
 }
 
-export const updateBorrow = (idBook, data) => {
-    console.log(idBook)
+export const updateBorrow = (bookid, data) => {
+    console.log(bookid)
     return {
         type: 'PATCH_BORROW',
-        payload: axios.patch(`http://192.168.6.191:3001/borrow/${idBook}`, { penalty: data })
+        payload: axios.patch(`http://192.168.6.191:3001/borrow/${bookid}`, data)
     }
 }

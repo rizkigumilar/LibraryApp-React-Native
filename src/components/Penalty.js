@@ -19,13 +19,14 @@ class Penalty extends Component {
         this.setState({ modalVisible: visible });
     }
     componentDidMount = async () => {
-        const bookid = this.props.match.params.bookid;
-        await this.props.dispatch(getBorrows(bookid));
+        const bookid = this.props.match.params.idBook;
+        await this.props.dispatch(getBorrow(bookid));
         this.setState({
             borrow: this.props.borrow
         });
         const { borrow } = this.state;
         const list = borrow.borrowList;
+
 
         {
             list &&
@@ -40,7 +41,6 @@ class Penalty extends Component {
                     })
                 })
         }
-        console.log(this.state.borrow)
     };
 
     render() {
@@ -58,30 +58,30 @@ class Penalty extends Component {
         let update = async () => {
             await this.props.dispatch(updateBorrow((this.state.updates[0]), this.props.id))
         };
+        console.log(this.state.updates[0])
         return (
             <View>
                 <Button onPress={() => {
                     this.setModalVisible(!this.state.modalVisible);
                 }} style={styles.borrow}>
-                    <Text style={{ color: 'white', marginBottom: 10 }}>Confirm</Text>
+                    <Text style={{ color: 'white', marginBottom: 18 }}>Confirm</Text>
                 </Button>
                 <Modal
                     animationType="slide"
                     transparent={false}
                     visible={this.state.modalVisible}
                 >
-                    <View style={{ margin: 22 }}>
-                        <Text>Kamu terlambat {this.state.hari} dan Denda {this.state.denda}</Text>
-                        <Text>Thank You</Text>
-                        <TouchableHighlight
-                            onPress={() => {
-                                this.setModalVisible(!this.state.modalVisible);
-                            }}>
-                            <Text style={{ color: 'black', fontSize: 18 }}>Hide Modal</Text>
-                        </TouchableHighlight>
+                    <View style={styles.container}>
+                        <Text>You're late {this.state.hari} day and fined Rp. {this.state.denda}</Text>
+                        <Text>Please confirm to administrator </Text>
+                        <Text>for return the book, Thank you</Text>
                         <TouchableOpacity onPress={editBorrows.bind(this)} style={styles.addButton}>
                             <Text style={{ color: 'white' }}>Oke</Text>
                         </TouchableOpacity>
+                        <TouchableHighlight
+                            onPress={() => { this.setModalVisible(!this.state.modalVisible) }} style={styles.addButton}>
+                            <Text style={{ color: 'white', fontSize: 18 }}>Cancel</Text>
+                        </TouchableHighlight>
                     </View>
                 </Modal>
             </View>
@@ -96,10 +96,8 @@ const mapStateToProps = (state) => {
 export default connect(mapStateToProps)(Penalty);
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
-        flexDirection: 'row',
-        position: 'relative',
-        padding: 20
+        paddingTop: 200,
+        marginLeft: 100
     },
     textLeft: {
         flexDirection: 'column',
@@ -140,7 +138,7 @@ const styles = StyleSheet.create({
     },
     addButton: {
         backgroundColor: 'black',
-        marginTop: 40,
+        marginTop: 20,
         width: 160,
         height: 40,
         borderRadius: 8,

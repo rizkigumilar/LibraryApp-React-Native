@@ -55,13 +55,24 @@ class List extends Component {
     render() {
         // console.log(this.state.books)
         return (
-            <View style={styles.MainContainer}>
-                <FlatList
-                    data={this.state.books}
-                    renderItem={this._renderItem}
-                    numColumns={2}
-                    keyExtractor={(item, index) => index}
-                />
+            <View>
+                {
+                    this.props.books.isFulfilled == false ?
+                        (<View style={{ height: 500, width: '100%', flex: 1, justifyContent: 'center', alignContent: 'center' }}>
+                            <ActivityIndicator
+                                color='black'
+                                size="large"
+                                style={styles.activityIndicator} />
+                        </View>) :
+                        (<View style={styles.MainContainer}>
+                            <FlatList
+                                data={this.state.books}
+                                renderItem={this._renderItem}
+                                numColumns={2}
+                                keyExtractor={(item, index) => index}
+                            />
+                        </View>)
+                }
             </View>
         );
     }

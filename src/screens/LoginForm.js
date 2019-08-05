@@ -11,7 +11,8 @@ import {
     Button,
     TouchableHighlight,
     Image,
-    Alert
+    Alert,
+    ImageBackground
 } from 'react-native';
 import Logo from '../assets/librarysymbol.jpg'
 import { NavigationEvents } from 'react-navigation';
@@ -23,61 +24,120 @@ class Login extends Component {
         super(props);
         this.state = {
             isLogin: false,
+            data: [],
             user: [],
-            email: '',
+            userid: null,
             name: '',
-            password: ''
+            ktp: '',
+            email: '',
+            token: '',
 
         }
-        AsyncStorage.getItem('name', (error, result) => {
-            if (result) {
-                this.setState({
-                    name: result,
-                });
-            }
-        });
+    }
 
-    }
-    onClickListener = (viewId) => {
-        Alert.alert("Alert", "Button pressed " + viewId);
-    }
+    componentDidMount = async () => {
+        const userid = this.state.userid
+        await this.props.dispatch(getUserId(userid));
+        this.setState({
+            user: this.props.user,
+        })
+        AsyncStorage.getItem('userid').then((value) => {
+            this.setState({ userid: value })
+        })
+        AsyncStorage.getItem('name').then((value) => {
+            this.setState({ name: value })
+        })
+        AsyncStorage.getItem('idNum').then((value) => {
+            this.setState({ idNum: value })
+        })
+        AsyncStorage.getItem('email').then((value) => {
+            this.setState({ email: value })
+        })
+        AsyncStorage.getItem('jwToken').then((value) => {
+            this.setState({ token: value })
+        })
+    };
+
     render() {
-        console.log('ini nama', this.state.name)
         const log = () => {
-            this.state.user.push({
-                email: this.state.email.toLocaleLowerCase(),
-                password: this.state.password.toLocaleLowerCase(),
+            this.state.data.push({
+                email: this.state.email,
+                password: this.state.password
             });
-            loginuser()
-            this.setState({ isLogin: true });
-        };
-        let loginuser = async () => {
-            await this.props.dispatch(login(this.state.user[0]))
-                .then(() => {
-                    this.props.navigation.navigate('Home');
-                })
+            add()
 
         };
+        let add = async () => {
+            await this.props.dispatch(login(this.state.data[0]))
+                .then(() => {
+                    Alert.alert(
+                        'Login',
+                        'Login Success',
+                        [
+                            { text: 'OK', onPress: () => this.props.navigation.navigate('Home') },
+                        ],
+                    );
+                })
+                .catch(() => {
+                    Alert.alert(
+                        'Login',
+                        'Login Failed',
+                        [
+                            { text: 'Try Again' },
+                        ],
+                    );
+                })
+        };
+
         const del = () => {
             AsyncStorage.removeItem('userid')
-            AsyncStorage.removeItem('jwtToken')
+            AsyncStorage.removeItem('jwToken')
                 .then(() => {
                     this.setState({ isLogin: false })
-                    this.props.navigation.navigate("Home");
+                    this.setState({ data: [] })
+                    Alert.alert(
+                        'Logout',
+                        'Logout success', [
+                            { text: 'OK', onPress: () => this.props.navigation.navigate('Home') }
+                        ]
+                    )
                 })
         };
-        console.log("userid", this.state.isLogin)
+        console.log("userid", this.state.userid, 'token', this.state.token)
+        console.log('user', this.state.user)
         return (
             <ScrollView>
                 <View behavior="padding"
                     style={styles.Wrapper}>
                     <NavigationEvents
-                        onWillFocus={payload => this.props.dispatch(getUserId(this.state.userid))}
+                        onWillFocus={payload => AsyncStorage.getItem('userid').then((value) => {
+                            this.setState({ userid: value })
+                        })}
+                    />
+                    <NavigationEvents
+                        onWillFocus={payload => AsyncStorage.getItem('name').then((value) => {
+                            this.setState({ name: value })
+                        })}
+                    />
+                    <NavigationEvents
+                        onWillFocus={payload => AsyncStorage.getItem('idNum').then((value) => {
+                            this.setState({ idNum: value })
+                        })}
+                    />
+                    <NavigationEvents
+                        onWillFocus={payload => AsyncStorage.getItem('email').then((value) => {
+                            this.setState({ email: value })
+                        })}
+                    />
+                    <NavigationEvents
+                        onWillFocus={payload => AsyncStorage.getItem('jwToken').then((value) => {
+                            this.setState({ token: value })
+                        })}
                     />
 
                     <View style={styles.container}>
                         <Image style={styles.logo} source={Logo} />
-                        {this.state.isLogin == false ? (
+                        {this.state.userid == null ? (
                             <View>
                                 <Text style={styles.title}>Login</Text>
                                 <View style={styles.inputContainer}>
@@ -110,10 +170,24 @@ class Login extends Component {
                                     <Text>Register</Text>
                                 </TouchableHighlight>
                             </View>) : (<View>
-                                <Text style={{ fontSize: 14, fontWeight: 'bold' }}>Hello, {this.state.name}</Text>
-                                <TouchableHighlight onPress={del.bind(this)} style={[styles.buttonContainer, styles.loginButton]}>
-                                    <Text style={styles.loginText}>Logout</Text>
-                                </TouchableHighlight>
+                                <View >
+                                    <Image style={styles.avatar} source={require('../assets/profile.png')} />
+                                    <View style={styles.body}>
+                                        <View style={styles.bodyContent}>
+                                            <Text style={styles.name}>{this.state.name}</Text>
+                                            <Text style={styles.info}>{this.state.email}</Text>
+                                            <Text style={styles.info}>{this.state.idNum}</Text>
+                                            <Text style={styles.description}>Dream Big, Start Small, Act Now</Text>
+
+                                            <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={() => { this.props.navigation.navigate('BorrowList', { idNum: this.state.idNum, userid: this.state.userid, token: this.state.token }) }}>
+                                                <Text style={{ color: 'white', fontSize: 18 }}>History List</Text>
+                                            </TouchableHighlight>
+                                            <TouchableHighlight onPress={del.bind(this)} style={[styles.buttonContainer, styles.loginButton]}>
+                                                <Text style={{ color: 'white', fontSize: 18 }}>Logout</Text>
+                                            </TouchableHighlight>
+                                        </View>
+                                    </View>
+                                </View>
                             </View>)}
                     </View>
                 </View>
@@ -181,5 +255,47 @@ const styles = StyleSheet.create({
     },
     loginText: {
         color: 'white',
+    },
+    avatar: {
+        width: 130,
+        height: 130,
+        borderRadius: 70,
+        borderWidth: 4,
+        borderColor: "white",
+        marginBottom: 10,
+        alignSelf: 'center',
+        position: 'absolute',
+        marginTop: -70,
+        backgroundColor: 'white'
+    },
+    name: {
+        fontSize: 22,
+        color: "#FFFFFF",
+        fontWeight: '600',
+    },
+    body: {
+        marginTop: 40,
+    },
+    bodyContent: {
+        flex: 1,
+        alignItems: 'center',
+        padding: 30,
+    },
+    name: {
+        fontSize: 28,
+        color: "#696969",
+        fontWeight: "600"
+    },
+    info: {
+        fontSize: 16,
+        color: "#00BFFF",
+        marginTop: 5
+    },
+    description: {
+        fontSize: 16,
+        color: "#696969",
+        marginTop: 10,
+        textAlign: 'center',
+        marginBottom: 50
     }
 });
