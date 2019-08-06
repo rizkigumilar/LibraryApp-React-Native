@@ -18,6 +18,8 @@ class List extends Component {
 
     state = {
         books: [],
+        isLoading: true,
+        fullField: false
     }
 
     componentDidMount = async () => {
@@ -57,12 +59,11 @@ class List extends Component {
         return (
             <View>
                 {
-                    this.props.books.isFulfilled == false ?
+                    this.props.book.isFulfilled === false ?
                         (<View style={{ height: 500, width: '100%', flex: 1, justifyContent: 'center', alignContent: 'center' }}>
                             <ActivityIndicator
                                 color='black'
-                                size="large"
-                                style={styles.activityIndicator} />
+                                size="large" />
                         </View>) :
                         (<View style={styles.MainContainer}>
                             <FlatList
@@ -79,7 +80,8 @@ class List extends Component {
 }
 const mapStateToProps = state => {
     return {
-        books: state.book.bookList
+        books: state.book.bookList,
+        book: state.book
     };
 };
 

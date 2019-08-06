@@ -46,7 +46,7 @@ class BorrowList extends Component {
                     (
                         <View>
                             <View style={{ flex: 1, alignItems: 'center' }}>
-                                <Text>My Borrow List!</Text>
+                                <Text style={{ fontSize: 25, fontWeight: 'bold' }}>My Borrow List!</Text>
                             </View>
                             <View >
                                 <FlatList

@@ -28,7 +28,7 @@ class BorrowScreen extends Component {
                             onWillFocus={() => this.props.dispatch(getBorrow())}
                         />
                         <View style={{ flex: 1, alignItems: 'center' }}>
-                            <Text>Borrow List!</Text>
+                            <Text style={{ fontSize: 25, fontWeight:'bold' }}>Borrow List!</Text>
                         </View>
                         <View >
                             <FlatList

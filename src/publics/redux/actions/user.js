@@ -1,10 +1,11 @@
 import axios from 'axios';
 import { AsyncStorage } from 'react-native'
+let url = `https://librarymobileapi.herokuapp.com`
 
 export const getUsers = () => {
     return {
         type: 'GET_USER',
-        payload: axios.get(`http://192.168.6.191:3001/user`,
+        payload: axios.get(`${url}/user`,
             {
                 headers: {
                     "authorization": "x-control-app",
@@ -18,7 +19,11 @@ export const getUsers = () => {
 export const getUserId = (userid) => {
     return {
         type: 'GET_USERID',
-        payload: axios.get(`http://192.168.6.191:3001/user/${userid}`),
+        payload: axios.get(`${url}/user/${userid}`, {
+            headers: {
+                "authorization": "x-control-app",
+            }
+        }),
 
     }
 }
@@ -27,14 +32,22 @@ export const register = (data) => {
     console.log(data)
     return {
         type: 'REGISTER',
-        payload: axios.post(`http://192.168.6.191:3001/user/register`, data)
+        payload: axios.post(`${url}/user/register`, data, {
+            headers: {
+                "authorization": "x-control-app",
+            }
+        })
     }
 }
 
 export const deleteMember = (userid) => {
     return {
         type: 'DELETE_USER', userid,
-        payload: axios.delete(`http://192.168.6.191:3001/user/member/${userid}`)
+        payload: axios.delete(`${url}/user/member/${userid}`, {
+            headers: {
+                "authorization": "x-control-app",
+            }
+        })
     }
 
 };
@@ -42,7 +55,7 @@ export const deleteMember = (userid) => {
 export const login = (data) => {
     return {
         type: 'LOGIN',
-        payload: axios.post(`http://192.168.6.191:3001/user/login`, data, {
+        payload: axios.post(`${url}/user/login`, data, {
             headers: {
                 "authorization": "x-control-app",
             }
