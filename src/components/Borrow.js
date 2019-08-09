@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { AsyncStorage, Modal, Text, ScrollView, View, Image, TouchableOpacity, TouchableHighlight, StyleSheet, Alert } from 'react-native';
 import { postBorrow } from '../publics/redux/actions/borrow';
+import { withNavigation } from 'react-navigation';
 
 class Borrow extends Component {
     state = {
@@ -33,31 +34,32 @@ class Borrow extends Component {
     setModalVisible(visible) {
         this.setState({ modalVisible: visible });
     }
+    borrow = () => {
+        this.state.borrow.push({
+            idNum: this.state.idNum,
+            idBook: this.state.id
+        });
+        this.add()
+        this.setState((visible) => ({
+            modalVisible: visible
+        }));
+    };
+    add = async () => {
+        await this.props.dispatch(postBorrow(this.state.borrow[0]))
+            .then(() => {
+                Alert.alert(
+                    'Success',
+                    'Borrow Success, Hope you enjoy the book',
+                    [
+                        { text: 'OK', onPress: () => this.props.navigation.navigate('Home') },
+                    ],
+                );
+            })
+    };
     render() {
         console.log("ini id nyaaa", this.state.idNum)
         console.log("ini id book", this.props.id)
-        const borrow = () => {
-            this.state.borrow.push({
-                idNum: this.state.idNum,
-                idBook: this.state.id
-            });
-            add()
-            this.setState((visible) => ({
-                modalVisible: visible
-            }));
-        };
-        let add = async () => {
-            await this.props.dispatch(postBorrow(this.state.borrow[0]))
-                .then(() => {
-                    Alert.alert(
-                        'Success',
-                        'Borrow Success, Hope you enjoy the book',
-                        [
-                            { text: 'OK', onPress: () => this.props.navigation.navigate('Home') },
-                        ],
-                    );
-                })
-        };
+
 
         var today = new Date();
         var dd = String(today.getDate() + 3).padStart(2, '0');
@@ -82,7 +84,7 @@ class Borrow extends Component {
                         <Text>{this.state.idNum}</Text>
                         <Text>Title : {this.props.name}</Text>
                         <Text>{date}</Text>
-                        <TouchableOpacity onPress={borrow.bind(this)} style={styles.addButton}>
+                        <TouchableOpacity onPress={this.borrow.bind(this)} style={styles.addButton}>
                             <Text style={{ color: 'white', fontSize: 18 }}>Borrow</Text>
                         </TouchableOpacity>
                         <TouchableHighlight
@@ -102,7 +104,7 @@ const mapStateToProps = state => {
         borrow: state.borrow
     };
 };
-export default connect(mapStateToProps)(Borrow);
+export default connect(mapStateToProps)(withNavigation(Borrow));
 const styles = StyleSheet.create({
     container: {
         paddingTop: 200,

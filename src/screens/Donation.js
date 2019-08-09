@@ -11,6 +11,7 @@ class Donation extends Component {
         this.state = {
             book: [],
             loading: false,
+            filePath: null
         };
 
     }
@@ -44,77 +45,49 @@ class Donation extends Component {
             }
         });
     };
-
-
+    bookAdd = () => (
+        dataFile = new FormData(),
+        dataFile.append('image',
+            {
+                uri: this.state.filePath.uri,
+                type: 'image/jpg',
+                name: 'lah'
+            }
+        ),
+        dataFile.append('name', this.state.name),
+        dataFile.append('writer', this.state.writer),
+        dataFile.append('location', this.state.location),
+        dataFile.append('description', this.state.description),
+        dataFile.append('idCat', this.state.idCat),
+        this.props.dispatch(postBook(dataFile))
+            .then(() => {
+                Alert.alert(
+                    'Success',
+                    'Donation Success, Thank you',
+                    [
+                        { text: 'OK', onPress: () => this.props.navigation.navigate('Home') },
+                    ],
+                )
+            })
+            .catch(() => {
+                Alert.alert(
+                    'Failed',
+                    'Donation Failed',
+                    [
+                        { text: 'Try Again' },
+                    ],
+                )
+            })
+    )
 
     render() {
-        const bookAdd = () => (
-            dataFile = new FormData(),
-            dataFile.append('image',
-                {
-                    uri: this.state.filePath.uri,
-                    type: 'image/jpg',
-                    name: '/'
-                }
-            ),
-            dataFile.append('name', this.state.name),
-            dataFile.append('writer', this.state.writer),
-            dataFile.append('location', this.state.location),
-            dataFile.append('description', this.state.description),
-            dataFile.append('idCat', this.state.idCat),
-            add(dataFile),
-            this.props.navigation.navigate("home")
-        )
-        let add = async (data) => {
-            await this.setState({
-                loading: true
-            })
 
-            this.props.dispatch(postBook(data))
-                .then(() => {
-                    Alert.alert(
-                        'Success',
-                        'Donation Success, Thank you',
-                        [
-                            { text: 'OK', onPress: () => this.props.navigation.navigate('Home') },
-                        ],
-                    )
-                    this.setState({
-
-                        name: '',
-                        writer: '',
-                        image: '',
-                        description: '',
-                        idCat: '',
-                        location: '',
-                    })
-                })
-                .catch(() => {
-                    Alert.alert(
-                        'Failed',
-                        'Donation Failed',
-                        [
-                            { text: 'Try Again' },
-                        ],
-                    )
-                    this.setState({
-
-                        name: '',
-                        writer: '',
-                        image: '',
-                        description: '',
-                        idCat: '',
-                        location: '',
-                    })
-                })
-
-        };
 
         return (
             <KeyboardAvoidingView>
                 <ScrollView>
                     <View>
-                        <Text style={{ fontSize: 40, fontWeight: 'bold', alignItems: 'center', marginLeft: 20 }}>Welcome Generous People</Text>
+                        <Text style={{ fontSize: 20, fontWeight: 'bold', alignItems: 'center', marginLeft: 70 }}>Welcome Generous People</Text>
                         <View style={styles.inputContainer}>
                             <TextInput style={styles.inputs}
                                 placeholder="Book Name"
@@ -134,7 +107,7 @@ class Donation extends Component {
                         <TouchableOpacity
                             style={styles.inputBox}
                             onPress={this.chooseFile.bind(this)}>
-                            <Text style={{ color: 'black', height: 50, marginTop: 10, marginBottom: -20 }}>Choose Photo </Text>
+                            <Text style={{ color: 'black', height: 50, marginTop: 10, marginBottom: -20, marginLeft: 30 }}>Choose Photo </Text>
                         </TouchableOpacity>
                         <View style={styles.inputContainer}>
                             <TextInput style={styles.inputs}
@@ -152,7 +125,7 @@ class Donation extends Component {
                                 multiline={true}
                                 onChangeText={val => this.setState({ 'description': val })} />
                         </View>
-                        <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={bookAdd.bind(this)}>
+                        <TouchableHighlight style={[styles.buttonContainer, styles.loginButton]} onPress={this.bookAdd.bind(this)}>
                             <Text style={styles.loginText}>Donate</Text>
                         </TouchableHighlight>
                     </View>
@@ -198,7 +171,7 @@ const styles = StyleSheet.create({
     },
     inputBox: {
         width: 200,
-        marginLeft: 10,
+        marginLeft: 100,
         paddingHorizontal: 16,
         fontSize: 16,
         color: 'black',

@@ -10,7 +10,7 @@ import {
     Text
 } from 'react-native';
 import { withNavigation } from 'react-navigation';
-import { getBook } from '../publics/redux/actions/book';
+import { getBook, getMoreBook } from '../publics/redux/actions/book';
 
 
 
@@ -19,14 +19,12 @@ class List extends Component {
     state = {
         books: [],
         isLoading: true,
+        page: 1,
         fullField: false
     }
 
     componentDidMount = async () => {
-        await this.props.dispatch(getBook());
-        this.setState({
-            books: this.props.books,
-        });
+        this.makeRequest()
         this.subs = [
             this.props.navigation.addListener('willFocus', async () => {
                 await this.props.dispatch(getBook());
@@ -43,16 +41,58 @@ class List extends Component {
         });
     };
 
+    makeRequest = () => {
+        const { page } = this.state
+        this.props.dispatch(getMoreBook(page))
+            .then(res => {
+                this.setState({
+                    isLoading: false,
+                    books: this.state.book.concat(res.action.payload.data.result)
+                })
+            }).catch(() => {
+                this.setState({ isLoading: false })
+            })
+    }
+    handleLoadMore = () => {
+        this.setState({
+            page: this.state.page + 1,
+        }, () => {
+            this.makeRequest()
+        })
+    }
+    renderFooter = () => {
+        return (
+            <View style={{
+                flex: 1,
+                justifyContent: 'center',
+                alignItems: 'center',
+                backgroundColor: '#fff',
+                marginVertical: 5
+            }}>
+                <View>
+                    <ActivityIndicator animating size="large" />
+                    <Text style={{ marginTop: 10, fontSize: 12 }}>Getting data..</Text>
+                </View>
+            </View>
+        )
+    }
+
     _renderItem = ({ item }) => (
         <View style={{ flex: 1, flexDirection: 'column', margin: 1, marginTop: 30 }}>
-            <TouchableOpacity activeOpacity={1} onPress={() => { this.props.navigation.navigate('BookDetail', item) }}>
+            <TouchableOpacity activeOpacity={0.5} onPress={() => { this.props.navigation.navigate('BookDetail', item) }}>
                 <Image style={styles.imageThumbnail} source={{ uri: item.image }} />
+                {item.StatusBorrow == 0 ? (<Text numberOfLines={1} style={styles.textBorrow}>Available</Text>)
+                    : (<Text numberOfLines={1} style={styles.textBorrowed}>Not Available</Text>)}
             </TouchableOpacity>
-            {item.StatusBorrow == 0 ? (<Text numberOfLines={1} style={styles.textBorrow}>Available</Text>)
-                : (<Text numberOfLines={1} style={styles.textBorrowed}>Not Available</Text>)}
-
         </View>
     )
+    handlePullRefresh = async () => {
+        await this.setState({ isLoading: true })
+        await this.props.dispatch(getBook())
+            .then(() => {
+                this.setState({ page: 1, books: this.props.book, isLoading: false })
+            })
+    }
 
     render() {
         // console.log(this.state.books)
@@ -71,6 +111,11 @@ class List extends Component {
                                 renderItem={this._renderItem}
                                 numColumns={2}
                                 keyExtractor={(item, index) => index}
+                                onEndReached={this.handleLoadMore}
+                                onEndReachedThreshold={0.1}
+                                ListFooterComponent={this.renderFooter}
+                                refreshing={this.state.isLoading}
+                                onRefresh={this.handlePullRefresh}
                             />
                         </View>)
                 }
@@ -105,13 +150,13 @@ const styles = StyleSheet.create({
     },
     textBorrow: {
         fontSize: 10,
-        color: 'white',
+        color: 'black',
         textAlign: 'center',
         paddingBottom: 2,
         backgroundColor: '#00FF00',
         position: 'absolute',
         zIndex: 1,
-        width: 155,
+        width: '80%',
         height: 15,
         marginTop: 220,
         marginLeft: 20
@@ -123,7 +168,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'grey',
         position: 'absolute',
         zIndex: 1,
-        width: 155,
+        width: '80%',
         height: 15,
         marginTop: 220,
         marginLeft: 20

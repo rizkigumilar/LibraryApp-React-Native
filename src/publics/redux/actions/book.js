@@ -10,6 +10,14 @@ export const getBook = () => {
     }
 }
 
+export const getMoreBook = (page) => {
+    return {
+        type: 'GET_PAGE',
+        payload: axios.get(`${url}/book/cek/lah?page=${page}`),
+
+    }
+};
+
 
 export const getBookid = (idBook) => {
     return {
